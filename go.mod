@@ -2,7 +2,7 @@ module github.com/nox-hq/nox-plugin-ai-eval
 
 go 1.25.6
 
-require github.com/nox-hq/nox v0.7.0
+require github.com/nox-hq/nox v0.8.1
 
 require (
 	golang.org/x/net v0.48.0 // indirect
