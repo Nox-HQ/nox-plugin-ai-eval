@@ -53,8 +53,7 @@ jobs:
           curl -sSL "https://github.com/nox-hq/nox/releases/latest/download/nox_$(curl -sSL https://api.github.com/repos/nox-hq/nox/releases/latest | jq -r .tag_name | sed 's/^v//')_linux_amd64.tar.gz" -o nox.tar.gz
           tar xzf nox.tar.gz
           ./nox plugin entry --dir . --release "${GITHUB_REF_NAME#v}" --output entry.json
-          echo "::notice file=entry.json::Open a PR against nox-hq/nox to add this entry to registry-scaffold/index.json"
-
+          echo "::notice file=entry.json::Published releases are added to the registry automatically by the Registry workflow in nox-hq/registry (runs daily). entry.json is kept as a debugging aid; no manual PR is normally needed."
       - name: Upload registry entry artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
