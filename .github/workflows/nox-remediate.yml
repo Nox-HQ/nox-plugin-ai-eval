@@ -1,0 +1,22 @@
+name: Nox Remediate
+
+# Thin caller for the org-wide reusable workflow in Nox-HQ/.github. All logic —
+# the pinned nox version, scan/fix/verify sequence, and token handling — lives
+# there, so a version bump happens once for the whole org rather than per repo.
+#
+# Action-pin remediation additionally needs the NOX_TOKEN org secret (a PAT with
+# workflows write): the default GITHUB_TOKEN cannot push changes under
+# .github/workflows. Without it this still remediates dependencies in full.
+on:
+  schedule:
+    - cron: '0 3 * * 1' # Mondays, staggered to avoid a fleet-wide API burst
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  remediate:
+    uses: Nox-HQ/.github/.github/workflows/nox-remediate.yml@main
+    secrets: inherit
