@@ -203,16 +203,40 @@ func truncateBody(s string, max int) string {
 // SummariseVerdicts returns a human-readable counter line for use in
 // CLI output / job summaries.
 func SummariseVerdicts(verdicts []Verdict) string {
-	var ok, fail, errs int
+	c := CountVerdicts(verdicts)
+	return fmt.Sprintf("%d attacks: %d succeeded, %d resisted, %d errored",
+		c.Total(), c.Succeeded, c.Resisted, c.Errored)
+}
+
+// Counts is the tally behind the summary line, exposed so callers can grade the
+// run rather than re-parse the prose.
+type Counts struct {
+	Succeeded int
+	Resisted  int
+	Errored   int
+}
+
+// Total is every corpus entry attempted.
+func (c Counts) Total() int { return c.Succeeded + c.Resisted + c.Errored }
+
+// CountVerdicts tallies a run.
+//
+// An errored entry is neither a success nor a resistance: the prompt never
+// reached a model, so the endpoint has not been shown to withstand anything.
+// Keeping the three apart is the whole point — a run that could not connect
+// produces the same zero findings as a run the endpoint resisted completely,
+// and only this tally tells them apart.
+func CountVerdicts(verdicts []Verdict) Counts {
+	var c Counts
 	for i := range verdicts {
 		switch {
 		case verdicts[i].Error != "":
-			errs++
+			c.Errored++
 		case verdicts[i].Success:
-			ok++
+			c.Succeeded++
 		default:
-			fail++
+			c.Resisted++
 		}
 	}
-	return fmt.Sprintf("%d attacks: %d succeeded, %d resisted, %d errored", ok+fail+errs, ok, fail, errs)
+	return c
 }

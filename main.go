@@ -145,7 +145,33 @@ func handleAIEval(ctx context.Context, req sdk.ToolRequest) (*pluginv1.InvokeToo
 		fb.Done()
 	}
 
-	resp.Diagnostic(pluginv1.DiagnosticSeverity_DIAGNOSTIC_SEVERITY_INFO, SummariseVerdicts(verdicts), "ai-eval")
+	// Grade the summary by whether the corpus actually ran.
+	//
+	// Zero findings has two completely different meanings: the endpoint
+	// resisted every attack, or no attack ever reached it. Both used to be
+	// reported at INFO with an empty findings list, so anything gating on
+	// severity, findings or exit code read "the endpoint was unreachable" as
+	// "the endpoint held" — a clean bill of health for a model that was never
+	// tested. The prose said "errored", but prose is not what a pipeline reads.
+	//
+	// Nothing tested is an ERROR: the run produced no evidence at all. A
+	// partial failure is a WARNING: the entries that did run are still
+	// meaningful, but the corpus was not fully exercised, so the result is a
+	// floor rather than a verdict.
+	counts := CountVerdicts(verdicts)
+	severity := pluginv1.DiagnosticSeverity_DIAGNOSTIC_SEVERITY_INFO
+	summary := SummariseVerdicts(verdicts)
+	switch {
+	case counts.Total() > 0 && counts.Errored == counts.Total():
+		severity = pluginv1.DiagnosticSeverity_DIAGNOSTIC_SEVERITY_ERROR
+		summary += " — every attack errored, so this endpoint was NOT evaluated. " +
+			"Zero findings here means the corpus never reached a model, not that the model resisted."
+	case counts.Errored > 0:
+		severity = pluginv1.DiagnosticSeverity_DIAGNOSTIC_SEVERITY_WARNING
+		summary += fmt.Sprintf(" — %d of %d attacks never reached the endpoint, so this run is a floor, not a verdict.",
+			counts.Errored, counts.Total())
+	}
+	resp.Diagnostic(severity, summary, "ai-eval")
 	return resp.Build(), nil
 }
 
