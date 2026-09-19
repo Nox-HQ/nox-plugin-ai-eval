@@ -59,10 +59,10 @@ checksum:
   name_template: "checksums.txt"
   algorithm: sha256
 
-# Cosign keyless signing of release artifacts. Bundle format
-# (cosign v3.10+, required by cosign v4) is produced alongside the
-# legacy --output-signature for backward compatibility with older
-# verifiers in the wild.
+# Cosign keyless signing of checksums.txt. The bundle
+# (checksums.txt.sigstore.json) carries signature and certificate together; it
+# is the format cosign v4 requires, and what the release notes tell users to
+# verify with.
 signs:
   - cmd: cosign
     signature: "${artifact}.sigstore.json"
@@ -93,11 +93,6 @@ changelog:
 release:
   draft: false
   prerelease: auto
-  # GoReleaser auto-uploads ${signature} from the signs block but
-  # doesn't know about the cosign bundle file. Attach it explicitly
-  # so cosign v4 verifiers can fetch it from the release.
-  extra_files:
-    - glob: dist/*.sig.bundle
   footer: |
     ## Install
 
@@ -116,9 +111,8 @@ release:
     Verify the release artifacts:
 
     ```bash
-    cosign verify-blob \
-      --certificate-identity-regexp "https://github.com/nox-hq/nox-plugin-ai-eval/.github/workflows/release.yml@.*" \
-      --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-      --signature checksums.txt.sig \
-      checksums.txt
+    cosign verify-blob checksums.txt \
+      --bundle checksums.txt.sigstore.json \
+      --certificate-identity "https://github.com/Nox-HQ/nox-plugin-ai-eval/.github/workflows/release.yml@refs/tags/{{ .Tag }}" \
+      --certificate-oidc-issuer https://token.actions.githubusercontent.com
     ```
