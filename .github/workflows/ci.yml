@@ -67,7 +67,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Nox
-        uses: nox-hq/nox@e6629b843b4403eb4db0c75a377e1b1edb2bc925 # v1.35.0
+        uses: nox-hq/nox@f626c0b09d0e7d14e730aebe6d4e3596164b9824 # v1.37.0
         with:
           path: .
           format: sarif,json
@@ -104,7 +104,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Nox (changed files only)
-        uses: nox-hq/nox@e6629b843b4403eb4db0c75a377e1b1edb2bc925 # v1.35.0
+        uses: nox-hq/nox@f626c0b09d0e7d14e730aebe6d4e3596164b9824 # v1.37.0
         with:
           path: .
           format: sarif,json
