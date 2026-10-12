@@ -55,7 +55,7 @@ jobs:
           ./nox plugin entry --dir . --release "${GITHUB_REF_NAME#v}" --output entry.json
           echo "::notice file=entry.json::Published releases are added to the registry automatically by the Registry workflow in nox-hq/registry (runs daily). entry.json is kept as a debugging aid; no manual PR is normally needed."
       - name: Upload registry entry artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: registry-entry
           path: entry.json
