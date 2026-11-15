@@ -1,5 +1,7 @@
 # nox-plugin-ai-eval
 
+[![nox security grade](.github/nox-badge.svg)](https://github.com/nox-hq/nox)
+
 Adversarial prompt corpus runner. Fires a bundled jailbreak / system-leak /
 role-confusion / tool-misuse corpus against a configured chat endpoint and
 reports which attacks succeeded.
