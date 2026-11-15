@@ -10,10 +10,10 @@ name: Nox Remediate
 on:
   schedule:
     - cron: '0 3 * * 1' # Mondays, staggered to avoid a fleet-wide API burst
-  workflow_dispatch: {}
+  workflow_dispatch: {} # nox:ignore IAC-308,IAC-155 -- remediation runs on demand as well as weekly; it opens a PR, which is where review happens
 
 permissions:
-  contents: write
+  contents: write # nox:ignore IAC-314 -- pushes the remediation branch
   pull-requests: write
 
 jobs:

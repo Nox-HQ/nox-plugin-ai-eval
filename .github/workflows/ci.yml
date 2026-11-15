@@ -79,7 +79,7 @@ jobs:
         if: always()
         with:
           sarif_file: nox-results/results.sarif
-        continue-on-error: true
+        continue-on-error: true # nox:ignore IAC-018 -- Code Scanning upload is reporting only; the same results are kept as an artifact and the PR gate is the blocking check
 
       - name: Upload scan artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -119,4 +119,4 @@ jobs:
         with:
           sarif_file: nox-pr/results.sarif
           category: nox-pr
-        continue-on-error: true
+        continue-on-error: true # nox:ignore IAC-018 -- Code Scanning upload is reporting only; the same results are kept as an artifact and the PR gate is the blocking check
